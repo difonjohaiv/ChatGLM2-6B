@@ -1,10 +1,11 @@
 from transformers import AutoModel, AutoTokenizer
 import gradio as gr
 import mdtex2html
-from utils import load_model_on_gpus
+# from utils import load_model_on_gpus
 
-tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm2-6b", trust_remote_code=True)
-model = AutoModel.from_pretrained("THUDM/chatglm2-6b", trust_remote_code=True).cuda()
+model_path = "glm2-6b"
+tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+model = AutoModel.from_pretrained(model_path, trust_remote_code=True).cuda()
 # 多显卡支持，使用下面两行代替上面一行，将num_gpus改为你实际的显卡数量
 # from utils import load_model_on_gpus
 # model = load_model_on_gpus("THUDM/chatglm2-6b", num_gpus=2)
@@ -39,11 +40,11 @@ def parse_text(text):
             if count % 2 == 1:
                 lines[i] = f'<pre><code class="language-{items[-1]}">'
             else:
-                lines[i] = f'<br></code></pre>'
+                lines[i] = '<br></code></pre>'
         else:
             if i > 0:
                 if count % 2 == 1:
-                    line = line.replace("`", "\`")
+                    line = line.replace("`", "\\`")
                     line = line.replace("<", "&lt;")
                     line = line.replace(">", "&gt;")
                     line = line.replace(" ", "&nbsp;")
@@ -55,7 +56,7 @@ def parse_text(text):
                     line = line.replace("(", "&#40;")
                     line = line.replace(")", "&#41;")
                     line = line.replace("$", "&#36;")
-                lines[i] = "<br>"+line
+                lines[i] = "<br>" + line
     text = "".join(lines)
     return text
 
@@ -105,4 +106,4 @@ with gr.Blocks() as demo:
 
     emptyBtn.click(reset_state, outputs=[chatbot, history, past_key_values], show_progress=True)
 
-demo.queue().launch(share=False, inbrowser=True)
+demo.queue().launch(share=True, inbrowser=True)
