@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request
 from transformers import AutoTokenizer, AutoModel
-import uvicorn, json, datetime
+import uvicorn
+import json
+import datetime
 import torch
 
 DEVICE = "cuda"
